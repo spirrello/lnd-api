@@ -1,14 +1,22 @@
+use crate::lnd_grpc_rust::lnrpc::GetInfoResponse;
 use crate::lnd_grpc_rust::LndClient;
+use crate::lnd_grpc_rust::LndClientError;
+use crate::lnd_grpc_rust::MyChannel;
+use bb8::ManageConnection;
 use derive_builder::Builder;
+// use lnd_grpc_rust::{LndClient, LndClientError, LndStateClient};
 use serde::{Deserialize, Serialize};
+use std::clone;
 use std::error;
 use std::fs;
+// use tonic::async_trait;
+use tonic::Code::InvalidArgument;
 
-use std::clone;
+use crate::lnd_grpc_rust::get_channel;
+use async_trait::async_trait;
+use bb8;
 
-use std::rc::Rc;
-
-#[derive(Default, Builder, Clone, Debug)]
+#[derive(Default, Builder, Clone, Debug, Deserialize)]
 #[builder(setter(into))]
 pub struct ClientConfig {
     pub cert: String,
@@ -39,22 +47,36 @@ fn buffer_as_hex(bytes: Vec<u8>) -> String {
 }
 
 #[derive(Clone)]
-pub struct LndConn {
+pub struct LndConnectionManager {
     pub client_config: ClientConfig,
-    pub lnd_client: LndClient,
 }
 
-// pub struct CloneAbleLndConn(pub LndConn);
+impl LndConnectionManager {
+    pub async fn new(cc: ClientConfig) -> Result<LndConnectionManager, LndClientError> {
+        Ok(LndConnectionManager { client_config: cc })
+    }
+}
 
-impl LndConn {
-    pub async fn new(cc: ClientConfig) -> Result<Self, Box<dyn error::Error>> {
-        let lnd_client =
-            crate::lnd_grpc_rust::connect(cc.cert.clone(), cc.macaroon.clone(), cc.socket.clone())
-                .await?;
+#[async_trait]
+impl bb8::ManageConnection for LndConnectionManager {
+    type Connection = LndClient;
+    type Error = LndClientError;
 
-        Ok(LndConn {
-            client_config: cc,
-            lnd_client,
-        })
+    async fn connect(&self) -> Result<Self::Connection, Self::Error> {
+        let lnd_client = crate::lnd_grpc_rust::connect(
+            self.client_config.cert.clone(),
+            self.client_config.macaroon.clone(),
+            self.client_config.socket.clone(),
+        )
+        .await;
+        Ok(lnd_client.unwrap())
+    }
+
+    async fn is_valid(&self, _conn: &mut Self::Connection) -> Result<(), Self::Error> {
+        Ok(())
+    }
+
+    fn has_broken(&self, _: &mut Self::Connection) -> bool {
+        false
     }
 }

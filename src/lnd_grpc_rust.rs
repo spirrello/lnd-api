@@ -10,6 +10,8 @@ use tonic::body::BoxBody;
 use tonic_openssl::ALPN_H2_WIRE;
 use tower::Service;
 
+use std::sync::{Arc, Mutex};
+
 pub mod autopilotrpc {
     tonic::include_proto!("autopilotrpc");
 }
@@ -231,7 +233,7 @@ impl tonic::service::Interceptor for MacaroonInterceptor {
     }
 }
 
-async fn get_channel(
+pub async fn get_channel(
     cert: String,
     socket: String,
 ) -> Result<MyChannel, Box<dyn std::error::Error>> {
