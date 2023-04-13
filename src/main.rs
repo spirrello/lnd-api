@@ -17,6 +17,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .service(lnd::getinfo::get_info)
+            .service(lnd::peers::listpeers::list_peers)
             .wrap(Logger::default())
     })
     .bind(("127.0.0.1", 8000))?
