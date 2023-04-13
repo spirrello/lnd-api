@@ -53,10 +53,6 @@ fn buffer_as_hex(bytes: Vec<u8>) -> String {
     hex_str
 }
 
-pub fn get_node_configurations() -> NodeConfigurations {
-    NodeConfigurations::new("nodeconfig.json".to_string())
-}
-
 pub struct NodeConnection {
     pub client: LndClient,
 }
