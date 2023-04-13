@@ -1,6 +1,8 @@
+use lnd_grpc_rust::LndClient;
 use serde::Deserialize;
 use serde_derive::Serialize;
-use std::fs;
+use std::error;
+use std::{env, fs};
 
 #[derive(Default, Clone, PartialEq, Deserialize)]
 pub struct NodeConfigurations {
@@ -8,7 +10,7 @@ pub struct NodeConfigurations {
 }
 
 impl NodeConfigurations {
-    pub fn new(config_file: &str) -> NodeConfigurations {
+    pub fn new(config_file: String) -> NodeConfigurations {
         let mut node_configurations: NodeConfigurations = {
             let node_configurations =
                 std::fs::read_to_string(config_file).expect("JSON was not well-formatted");
@@ -52,5 +54,30 @@ fn buffer_as_hex(bytes: Vec<u8>) -> String {
 }
 
 pub fn get_node_configurations() -> NodeConfigurations {
-    NodeConfigurations::new("nodeconfig.json")
+    NodeConfigurations::new("nodeconfig.json".to_string())
+}
+
+pub struct NodeConnection {
+    pub client: LndClient,
+}
+
+impl NodeConnection {
+    pub async fn new(node_name: String) -> Result<NodeConnection, Box<dyn error::Error>> {
+        let node_config_file = env::var("NODE_CONFIG_FILE").expect("NODE_CONFIG_FILE not set");
+        let node_configurations = NodeConfigurations::new(node_config_file);
+        let node_index = node_configurations.get_node_index(node_name.to_string());
+
+        let client = lnd_grpc_rust::connect(
+            node_configurations.nodes[node_index].cert.clone().unwrap(),
+            node_configurations.nodes[node_index]
+                .macaroon
+                .clone()
+                .unwrap(),
+            node_configurations.nodes[node_index].socket.clone(),
+        )
+        .await
+        .expect("failed to connect");
+
+        Ok(NodeConnection { client })
+    }
 }

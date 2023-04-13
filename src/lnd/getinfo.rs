@@ -1,7 +1,7 @@
 use derive_builder::Builder;
 use serde_derive::{Deserialize, Serialize};
 
-use crate::lnd::setuplndclient;
+use super::setuplndclient::NodeConnection;
 use actix_web::{get, web, HttpResponse};
 
 #[derive(Debug, Builder, Deserialize, Serialize)]
@@ -35,21 +35,10 @@ pub struct GetInfoHTTPResponse {
 pub async fn get_info(node_name: web::Path<String>) -> HttpResponse {
     const MESSAGE: &str = "get_info response";
 
-    let node_configurations = setuplndclient::get_node_configurations();
-    let node_index = node_configurations.get_node_index(node_name.to_string());
+    let mut node_connection = NodeConnection::new(node_name.to_string()).await.unwrap();
 
-    let mut client = lnd_grpc_rust::connect(
-        node_configurations.nodes[node_index].cert.clone().unwrap(),
-        node_configurations.nodes[node_index]
-            .macaroon
-            .clone()
-            .unwrap(),
-        node_configurations.nodes[node_index].socket.clone(),
-    )
-    .await
-    .expect("failed to connect");
-
-    let get_info_response = client
+    let get_info_response = node_connection
+        .client
         .lightning()
         .get_info(lnd_grpc_rust::lnrpc::GetInfoRequest {})
         .await
