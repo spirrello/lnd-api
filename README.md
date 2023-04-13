@@ -1,7 +1,7 @@
-# lnd-api
+# lnd-grid
 
 
-API for interacting with LND nodes.
+API for interacting with a fleet of LND nodes.
 
 ## Development
 
