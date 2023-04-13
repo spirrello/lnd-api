@@ -33,8 +33,6 @@ pub struct GetInfoHTTPResponse {
 
 #[get("/getinfo/{node}")]
 pub async fn get_info(node_name: web::Path<String>) -> HttpResponse {
-    const MESSAGE: &str = "get_info response";
-
     let mut node_connection = NodeConnection::new(node_name.to_string()).await.unwrap();
 
     let get_info_response = node_connection
