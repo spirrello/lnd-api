@@ -1049,6 +1049,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d59d8c75012853d2e872fb56bc8a2e53718e2cafe1a4c823143141c6d90c322f"
 
 [[package]]
+name = "lnd-api"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "derive_builder",
+ "env_logger 0.10.0",
+ "lnd_grpc_rust",
+ "serde",
+ "serde_derive",
+ "serde_json",
+]
+
+[[package]]
 name = "lnd_grpc_rust"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1456,19 +1469,6 @@ name = "regex-syntax"
 version = "0.6.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f162c6dd7b008981e4d40210aca20b4bd0f9b60ca9271061b07f78537722f2e1"
-
-[[package]]
-name = "rust-lnd-api"
-version = "0.1.0"
-dependencies = [
- "actix-web",
- "derive_builder",
- "env_logger 0.10.0",
- "lnd_grpc_rust",
- "serde",
- "serde_derive",
- "serde_json",
-]
 
 [[package]]
 name = "rustc_version"
