@@ -1,3 +1,4 @@
+pub mod common;
 pub mod getinfo;
 pub mod httpresponse;
 pub mod peers;
