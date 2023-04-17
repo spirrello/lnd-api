@@ -3,7 +3,7 @@ use super::super::httpresponse::LNDHTTPResponse;
 use super::super::setuplndclient::NodeConnection;
 use actix_web::{get, web, HttpResponse};
 use derive_builder::Builder;
-// use lnd_grpc_rust::lnrpc::NodeAddress;
+
 use serde_derive::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -115,30 +115,30 @@ pub async fn describe_graph(node_name: web::Path<String>) -> HttpResponse {
     for edge in describe_graph_response.edges.iter() {
         let mut node1_policy = Node1Policy::default();
         let mut node2_policy = Node2Policy::default();
-        for np in edge.node1_policy.iter() {
+        for node_policy in edge.node1_policy.iter() {
             let node_policy = Node1PolicyBuilder::default()
-                .time_lock_delta(np.time_lock_delta.clone())
-                .min_htlc(np.min_htlc.clone())
-                .fee_base_msat(np.fee_base_msat.clone())
-                .fee_rate_milli_msat(np.fee_base_msat.clone())
-                .disabled(np.disabled.clone())
-                .max_htlc_msat(np.max_htlc_msat.clone())
-                .last_update(np.last_update.clone())
-                .custom_records(np.custom_records.clone())
+                .time_lock_delta(node_policy.time_lock_delta.clone())
+                .min_htlc(node_policy.min_htlc.clone())
+                .fee_base_msat(node_policy.fee_base_msat.clone())
+                .fee_rate_milli_msat(node_policy.fee_base_msat.clone())
+                .disabled(node_policy.disabled.clone())
+                .max_htlc_msat(node_policy.max_htlc_msat.clone())
+                .last_update(node_policy.last_update.clone())
+                .custom_records(node_policy.custom_records.clone())
                 .build()
                 .unwrap();
             node1_policy = node_policy;
         }
-        for np in edge.node2_policy.iter() {
+        for node_policy in edge.node2_policy.iter() {
             let node_policy = Node2PolicyBuilder::default()
-                .time_lock_delta(np.time_lock_delta.clone())
-                .min_htlc(np.min_htlc.clone())
-                .fee_base_msat(np.fee_base_msat.clone())
-                .fee_rate_milli_msat(np.fee_base_msat.clone())
-                .disabled(np.disabled.clone())
-                .max_htlc_msat(np.max_htlc_msat.clone())
-                .last_update(np.last_update.clone())
-                .custom_records(np.custom_records.clone())
+                .time_lock_delta(node_policy.time_lock_delta.clone())
+                .min_htlc(node_policy.min_htlc.clone())
+                .fee_base_msat(node_policy.fee_base_msat.clone())
+                .fee_rate_milli_msat(node_policy.fee_base_msat.clone())
+                .disabled(node_policy.disabled.clone())
+                .max_htlc_msat(node_policy.max_htlc_msat.clone())
+                .last_update(node_policy.last_update.clone())
+                .custom_records(node_policy.custom_records.clone())
                 .build()
                 .unwrap();
             node2_policy = node_policy;

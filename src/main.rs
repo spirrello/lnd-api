@@ -19,6 +19,7 @@ async fn main() -> std::io::Result<()> {
             .service(lnd::getinfo::get_info)
             .service(lnd::peers::listpeers::list_peers)
             .service(lnd::peers::describegraph::describe_graph)
+            .service(lnd::wallet::walletbalance::walelt_balance)
             .wrap(Logger::default())
     })
     .bind(("127.0.0.1", 8000))?
