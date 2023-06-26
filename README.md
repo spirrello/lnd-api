@@ -3,6 +3,13 @@
 
 API for interacting with a fleet of LND nodes.
 
+# To do
+- Generate our own Protobuf files.  Maybe we can implement Serialize trait to not require a struct for parsing each response.
+  - examples:
+    https://github.com/jgarzik/rust-protobuf-example?search=1
+    https://github.com/lightningnetwork/lnd/tree/master/lnrpc
+    https://github.com/niteshbalusu11/lnd-grpc-rust/blob/master/build.rs
+
 ## Development
 
 
