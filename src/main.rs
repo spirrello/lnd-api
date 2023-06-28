@@ -16,7 +16,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            // .service(lnd::getinfo::get_info)
+            .service(views::getinfo::get_info)
             // .service(lnd::peers::listpeers::list_peers)
             // .service(lnd::peers::describegraph::describe_graph)
             // .service(lnd::wallet::walletbalance::walelt_balance)

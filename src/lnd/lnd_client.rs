@@ -5,7 +5,6 @@ use openssl::{
     ssl::{SslConnector, SslMethod},
     x509::X509,
 };
-use serde::Serialize;
 use std::{error::Error, task::Poll};
 use tonic::body::BoxBody;
 use tonic_openssl::ALPN_H2_WIRE;

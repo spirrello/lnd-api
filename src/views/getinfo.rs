@@ -1,10 +1,9 @@
-use derive_builder::Builder;
-use serde_derive::{Deserialize, Serialize};
-use serde_json::{Result, Value};
-
+use serde_derive::Serialize;
+// use serde_json::{Result, Value};
+use crate::lnd::lnd_client::lnrpc::GetInfoRequest;
 use crate::lnd::{lnd_client::lnrpc::GetInfoResponse, node_connect::NodeConnection};
-use actix_web::http::header::ContentType;
-use actix_web::{body::BoxBody, get, web, HttpRequest, HttpResponse, Responder};
+// use actix_web::http::header::ContentType;
+use actix_web::{get, web, HttpResponse};
 
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
@@ -40,8 +39,10 @@ impl Serialize for GetInfoResponse {
         S: Serializer,
     {
         let mut response = serializer.serialize_struct("GetInfoResponse", 2)?;
-        response.serialize_field("version", &self.version);
-        response.serialize_field("commit_hash", &self.commit_hash);
+        response.serialize_field("version", &self.version).unwrap();
+        response
+            .serialize_field("commit_hash", &self.commit_hash)
+            .unwrap();
         response.end()
     }
 }
@@ -67,7 +68,7 @@ pub async fn get_info(node_name: web::Path<String>) -> HttpResponse {
     let get_info_response = node_connection
         .client
         .lightning()
-        .get_info(GetInfoResponse {})
+        .get_info(GetInfoRequest {})
         .await
         .expect("failed to get info");
     let get_info_response: GetInfoResponse = get_info_response.into_inner();
