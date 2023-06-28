@@ -1,4 +1,4 @@
-pub mod nodes;
+mod nodes;
 
 use actix_web::web::ServiceConfig;
 

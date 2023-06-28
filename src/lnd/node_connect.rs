@@ -1,11 +1,10 @@
+use crate::lnd::lnd_client::LndClient;
 use serde::Deserialize;
 use serde_derive::Serialize;
 use std::error;
 use std::{env, fs};
 
-use crate::lnd::lnd_client::LndClient;
-
-#[derive(Default, Clone, PartialEq, Deserialize)]
+#[derive(Default, Serialize, Clone, PartialEq, Deserialize)]
 pub struct NodeConfigurations {
     pub nodes: Vec<Node>,
 }

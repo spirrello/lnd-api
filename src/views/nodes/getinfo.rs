@@ -7,8 +7,8 @@ use serde_derive::Serialize;
 
 use serde::ser::{Serialize, SerializeStruct, Serializer};
 
-#[derive(Serialize)]
-pub struct GetInfoHTTPResponse {
+#[derive(Serialize, Debug)]
+pub struct ReturnHTTPResponse {
     pub message: GetInfoResponse,
 }
 impl Serialize for Chain {
@@ -64,7 +64,7 @@ impl Serialize for GetInfoResponse {
     }
 }
 
-impl Responder for GetInfoHTTPResponse {
+impl Responder for ReturnHTTPResponse {
     type Body = BoxBody;
     fn respond_to(self, _req: &HttpRequest) -> HttpResponse<Self::Body> {
         let body = serde_json::to_string(&self).unwrap();
@@ -78,18 +78,18 @@ pub async fn getinfo(node_name: web::Path<String>) -> impl Responder {
     return get_lnd_info(node_name).await;
 }
 
-async fn get_lnd_info(node_name: web::Path<String>) -> GetInfoHTTPResponse {
+async fn get_lnd_info(node_name: web::Path<String>) -> ReturnHTTPResponse {
     let mut node_connection = NodeConnection::new(node_name.to_string()).await.unwrap();
 
-    let get_info_response = node_connection
+    let lnd_response = node_connection
         .client
         .lightning()
         .get_info(GetInfoRequest {})
         .await
         .expect("failed to get info");
-    let get_info_response: GetInfoResponse = get_info_response.into_inner();
+    let lnd_response: GetInfoResponse = lnd_response.into_inner();
 
-    return GetInfoHTTPResponse {
-        message: get_info_response,
+    return ReturnHTTPResponse {
+        message: lnd_response,
     };
 }
