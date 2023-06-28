@@ -1,4 +1,4 @@
-use actix_web::middleware::Logger;
+// use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
 use std::env;
 pub mod lnd;
@@ -14,15 +14,11 @@ async fn main() -> std::io::Result<()> {
 
     println!("🚀 Server started successfully");
 
-    HttpServer::new(move || {
-        App::new()
-            .service(views::getinfo::get_info)
-            // .service(lnd::peers::listpeers::list_peers)
-            // .service(lnd::peers::describegraph::describe_graph)
-            // .service(lnd::wallet::walletbalance::walelt_balance)
-            .wrap(Logger::default())
+    HttpServer::new(|| {
+        let app = App::new().configure(views::views_factory);
+        return app;
     })
-    .bind(("127.0.0.1", 8000))?
+    .bind("127.0.0.1:8000")?
     .run()
     .await
 }
