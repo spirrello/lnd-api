@@ -1,4 +1,3 @@
-// use crate::lnd::lnd_client::lnrpc::{Chain, Feature, Get};
 use crate::lnd::{lnd_client::lnrpc::*, node_connect::NodeConnection};
 use actix_web::http::header::ContentType;
 use actix_web::HttpRequest;
