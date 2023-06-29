@@ -1,4 +1,4 @@
-# lnd-grid
+# power-grid
 
 
 API for interacting with a fleet of LND nodes.
