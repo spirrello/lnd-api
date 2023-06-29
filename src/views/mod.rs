@@ -1,5 +1,5 @@
+pub mod basehttp;
 mod nodes;
-
 use actix_web::web::ServiceConfig;
 
 use self::nodes::node_views_factory;

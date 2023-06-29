@@ -1,4 +1,4 @@
-// use actix_web::middleware::Logger;
+use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
 use std::env;
 
@@ -16,7 +16,9 @@ async fn main() -> std::io::Result<()> {
     println!("🚀 Server started successfully");
 
     HttpServer::new(|| {
-        let app = App::new().configure(views::views_factory);
+        let app = App::new()
+            .configure(views::views_factory)
+            .wrap(Logger::default());
         return app;
     })
     .bind("127.0.0.1:8000")?
