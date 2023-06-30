@@ -1,4 +1,3 @@
-mod describegraph;
 mod getinfo;
 mod listpeers;
 mod walletbalance;
@@ -12,10 +11,6 @@ pub fn node_views_factory(app: &mut ServiceConfig) {
             .route(
                 "walletbalance/{node}",
                 get().to(walletbalance::get_walletbalance),
-            )
-            .route(
-                "describegraph/{node}",
-                get().to(describegraph::get_describegraph),
             ),
     );
 }
