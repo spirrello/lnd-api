@@ -11,7 +11,7 @@ pub fn node_views_factory(app: &mut ServiceConfig) {
             .route("listpeers/{node}", get().to(listpeers::get_listpeers))
             .route(
                 "walletbalance/{node}",
-                get().to(walletbalance::walletbalance),
+                get().to(walletbalance::get_walletbalance),
             )
             .route(
                 "describegraph/{node}",
