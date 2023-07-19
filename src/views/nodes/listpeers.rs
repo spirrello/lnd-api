@@ -55,7 +55,7 @@ impl Serialize for ListPeersResponse {
 }
 
 pub async fn get_listpeers(node_name: web::Path<String>) -> web::Json<ReturnHTTPResponse> {
-    let mut node_connection = NodeConnection::new(node_name.to_string()).await.unwrap();
+    let mut node_connection = NodeConnection::new(&node_name).await.unwrap();
 
     let latest_error = true;
     let lnd_response = node_connection

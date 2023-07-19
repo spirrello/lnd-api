@@ -92,7 +92,7 @@ impl Serialize for ChannelGraph {
 }
 
 pub async fn get_describegraph(node_name: web::Path<String>) -> web::Json<ReturnHTTPResponse> {
-    let mut node_connection = NodeConnection::new(node_name.to_string()).await.unwrap();
+    let mut node_connection = NodeConnection::new(&node_name).await.unwrap();
 
     let include_unannounced = true;
     let lnd_response = node_connection

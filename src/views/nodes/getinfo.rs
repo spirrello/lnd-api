@@ -15,7 +15,8 @@ impl Serialize for Chain {
         S: Serializer,
     {
         let mut thing = serializer.serialize_struct("Chain", 1)?;
-        thing.serialize_field("chains", &self.chain)?;
+        thing.serialize_field("chain", &self.chain)?;
+        thing.serialize_field("network", &self.network)?;
         thing.end()
     }
 }
@@ -58,12 +59,14 @@ impl Serialize for GetInfoResponse {
             "store_final_htlc_resolutions",
             &self.store_final_htlc_resolutions,
         )?;
+        response.serialize_field("synced_to_chain", &self.synced_to_chain)?;
+        response.serialize_field("synced_to_graph", &self.synced_to_graph)?;
         response.end()
     }
 }
 
 pub async fn get_getinfo(node_name: web::Path<String>) -> web::Json<ReturnHTTPResponse> {
-    let mut node_connection = NodeConnection::new(node_name.to_string()).await.unwrap();
+    let mut node_connection = NodeConnection::new(&node_name).await.unwrap();
 
     let lnd_response = node_connection
         .client

@@ -58,7 +58,7 @@ pub struct NodeConnection {
 }
 
 impl NodeConnection {
-    pub async fn new(node_name: String) -> Result<NodeConnection, Box<dyn error::Error>> {
+    pub async fn new(node_name: &String) -> Result<NodeConnection, Box<dyn error::Error>> {
         let node_config_file = env::var("NODE_CONFIG_FILE").expect("NODE_CONFIG_FILE not set");
         let node_configurations = NodeConfigurations::new(node_config_file);
         let node_index = node_configurations.get_node_index(node_name.to_string());

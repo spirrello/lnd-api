@@ -43,7 +43,7 @@ impl Serialize for WalletBalanceResponse {
 }
 
 pub async fn get_walletbalance(node_name: web::Path<String>) -> web::Json<ReturnHTTPResponse> {
-    let mut node_connection = NodeConnection::new(node_name.to_string()).await.unwrap();
+    let mut node_connection = NodeConnection::new(&node_name).await.unwrap();
 
     let lnd_response = node_connection
         .client

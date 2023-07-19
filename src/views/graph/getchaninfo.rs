@@ -12,7 +12,7 @@ pub struct ReturnHTTPResponse {
 
 pub async fn get_getchaninfo(params: web::Path<(String, String)>) -> web::Json<ReturnHTTPResponse> {
     let (node_name, chan_id) = params.into_inner();
-    let mut node_connection = NodeConnection::new(node_name.to_string()).await.unwrap();
+    let mut node_connection = NodeConnection::new(&node_name).await.unwrap();
 
     let chan_id: u64 = chan_id.parse().unwrap();
     let lnd_response = node_connection

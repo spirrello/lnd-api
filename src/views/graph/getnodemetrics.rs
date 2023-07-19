@@ -35,7 +35,7 @@ impl Serialize for NodeMetricsResponse {
 }
 
 pub async fn get_getnodemetrics(node_name: web::Path<String>) -> web::Json<ReturnHTTPResponse> {
-    let mut node_connection = NodeConnection::new(node_name.to_string()).await.unwrap();
+    let mut node_connection = NodeConnection::new(&node_name).await.unwrap();
 
     let types: Vec<i32> = vec![1];
     let lnd_response = node_connection
