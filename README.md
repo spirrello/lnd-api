@@ -12,6 +12,10 @@ cargo watch -x run
 
 ```
 
+### Examples
+
+getinfo
+
 ```
 curl http://localhost:8000/v1/node/getinfo/carol | jq
 
