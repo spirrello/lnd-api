@@ -48,3 +48,18 @@ curl http://localhost:8000/getinfo/carol | jq
 }
 
 ```
+
+Create invoices
+
+```
+curl -XPOST -H "Content-Type: application/json" http://localhost:8000/v1/invoice/create -d '{"node_name":"carol", "memo":"beer","millisat": 100000}' | jq
+
+{
+  "message": {
+    "r_hash": "YT311QKvDxsLqJs5VBRZcR/qJRKktVnvkMjwuGSjmPQ=",
+    "add_index": 21,
+    "payment_addr": "1VocULn6QhOMloYvHJM7IPl7ShZ3gt0Qp/zm62hL4Go=",
+    "payment_request": "lnbcrt1u1pjt397ypp5vy7lt4gz4u83kzagnvu4g9zewy075fgj5j64nmuserctse9rnr6qdq8vfjk2uscqzpgxqyz5vqsp564dpc59elfpp8ryksch3eyemyruhkjskw7pd6y98lnnwk6ztup4q9qyyssqqrgjrmp2xcdpkrhnvjwc7xvrglhwegc8xjn404qflpjegkaasje976f74q7lx4q3syd5l7eupma2l0469ajnma0egvevfkwc4m763xgp72tlfd"
+  }
+}
+```
