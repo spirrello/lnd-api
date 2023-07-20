@@ -6,26 +6,22 @@ use crate::{
     },
 };
 use actix_web::web;
-use serde::ser::{Serialize, SerializeStruct, Serializer};
 use serde_derive::Serialize;
 
-#[derive(Serialize, Debug)]
+use base64::encode;
+use derive_builder::Builder;
+
+#[derive(Debug, Serialize)]
 pub struct ReturnHTTPResponse {
-    pub message: AddInvoiceResponse,
+    pub message: InvoiceHTTPResponse,
 }
 
-impl Serialize for AddInvoiceResponse {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut thing = serializer.serialize_struct("AddInvoiceResponse", 1)?;
-        thing.serialize_field("r_hash", &self.r_hash)?;
-        thing.serialize_field("add_index", &self.add_index)?;
-        thing.serialize_field("payment_addr", &self.payment_addr)?;
-        thing.serialize_field("payment_request", &self.payment_request)?;
-        thing.end()
-    }
+#[derive(Default, Builder, Debug, Serialize)]
+pub struct InvoiceHTTPResponse {
+    r_hash: String,
+    add_index: u64,
+    payment_addr: String,
+    payment_request: String,
 }
 
 pub async fn create_invoice(
@@ -47,7 +43,17 @@ pub async fn create_invoice(
         .expect("failed to get info");
     let lnd_response: AddInvoiceResponse = lnd_response.into_inner();
 
+    let r_hash = encode(&lnd_response.r_hash);
+    let payment_addr = encode(&lnd_response.payment_addr);
+    let invoice_http_response = InvoiceHTTPResponseBuilder::default()
+        .add_index(lnd_response.add_index.clone())
+        .payment_addr(payment_addr)
+        .payment_request(lnd_response.payment_request.clone())
+        .r_hash(r_hash)
+        .build()
+        .unwrap();
+
     web::Json(ReturnHTTPResponse {
-        message: lnd_response,
+        message: invoice_http_response,
     })
 }
