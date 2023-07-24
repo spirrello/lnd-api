@@ -7,15 +7,15 @@ pub fn graph_views_factory(app: &mut ServiceConfig) {
     app.service(
         scope("v1/graph")
             .route(
-                "describegraph/{node}",
+                "{node}/describegraph",
                 get().to(describegraph::get_describegraph),
             )
             .route(
-                "getchaninfo/{node}/{chan_id}",
+                "{node}/getchaninfo/{chan_id}",
                 get().to(getchaninfo::get_getchaninfo),
             )
             .route(
-                "getnodemetrics/{node}",
+                "{node}/getnodemetrics",
                 get().to(getnodemetrics::get_getnodemetrics),
             ),
     );
