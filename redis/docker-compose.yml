@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  redis:
+    image: docker.io/bitnami/redis:7.0
+    environment:
+      - REDIS_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+      - ./redis.conf:/opt/bitnami/redis/mounted-etc/redis.conf
+  redis-commander:
+    image: rediscommander/redis-commander
+    environment:
+      - REDIS_HOST=redis-redis-1
+      - REDIS_PASSWORD=eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    ports:
+      - "9090:8081"
+    restart: always
+  # redis-browser:
+  #   image: windok/redis-browser
+  #   network_mode: host
+  #   ports:
+  #     - '4567:4567'
+
+
+volumes:
+  redis_data:
+    driver: local
+
+
+# references
+# https://hub.docker.com/r/bitnami/redis
+# https://redis.io/docs/management/config-file/
+
+# version: '3.8'
+# services:
+#   cache:
+#     image: redis:6.2-alpine
+#     restart: always
+#     ports:
+#       - '6379:6379'
+#     command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+#     volumes:
+#       - cache:/data
+# volumes:
+#   cache:
+#     driver: local

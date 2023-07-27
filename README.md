@@ -17,7 +17,7 @@ cargo watch -x run
 getinfo
 
 ```
-curl http://localhost:8000/v1/node/getinfo/carol | jq
+curl http://localhost:8000/v1/nodes/carol/getinfo | jq
 
 {
   "status": "success",
@@ -49,7 +49,7 @@ curl http://localhost:8000/v1/node/getinfo/carol | jq
 Create invoices
 
 ```
-curl -XPOST -H "Content-Type: application/json" http://localhost:8000/v1/invoice/create -d '{"node_name":"carol", "memo":"beer","millisat": 100000}' | jq
+curl -XPOST -H "Content-Type: application/json" http://localhost:8000/v1/invoices/create -d '{"node_name":"carol", "memo":"beer","millisat": 100000}' | jq
 
 {
   "message": {

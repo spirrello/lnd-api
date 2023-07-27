@@ -1,2 +1,2 @@
-mod cache;
+pub mod cache;
 mod storage_error;

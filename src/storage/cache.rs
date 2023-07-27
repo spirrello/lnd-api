@@ -2,7 +2,7 @@ use redis::FromRedisValue;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
-use deadpool_redis::{Config, Connection, Pool, Runtime};
+use deadpool_redis::{redis::cmd, Config, Connection, Pool, Runtime};
 use redis::AsyncCommands;
 use std::env;
 
@@ -18,18 +18,13 @@ const WAIT_TIMEOUT: Option<Duration> = Some(Duration::from_secs(10));
 
 #[derive(Serialize, Deserialize)]
 pub struct CachePayload {
-    prefix: String,
     hash_key: String,
     values: Vec<(String, String)>,
 }
 
 impl CachePayload {
-    pub fn new(prefix: String, hash_key: String, values: Vec<(String, String)>) -> CachePayload {
-        CachePayload {
-            prefix,
-            hash_key,
-            values,
-        }
+    pub fn new(hash_key: String, values: Vec<(String, String)>) -> CachePayload {
+        CachePayload { hash_key, values }
     }
 }
 
@@ -41,7 +36,7 @@ pub fn _simple_create_pool(host_addr: &str) -> Result<DeadpoolPool, RedisError> 
         .map_err(|e| RedisError::new_string(e.to_string()))
 }
 
-pub fn create_pool(host_addr: &str) -> Result<DeadpoolPool, RedisError> {
+pub fn create_pool() -> Result<DeadpoolPool, RedisError> {
     let redis_addr =
         env::var("REDIS_HOSTNAME").expect("missing environment variable REDIS_HOSTNAME");
     let uri_scheme = match env::var("IS_TLS") {
@@ -64,25 +59,13 @@ pub fn create_pool(host_addr: &str) -> Result<DeadpoolPool, RedisError> {
         .map_err(|e| RedisError::new_string(e.to_string()))
 }
 
-async fn create_connection(pool: &DeadpoolPool) -> Result<DeadpoolConnection, RedisError> {
+pub async fn create_connection(pool: &DeadpoolPool) -> Result<DeadpoolConnection, RedisError> {
     pool.get()
         .await
         .map_err(|e| RedisError::new_string(e.to_string()))
 }
 
-fn get_key(key: &str) -> String {
-    format!("{}:{}", PREFIX, key)
-}
-
-pub async fn set(pool: &DeadpoolPool, key: &str, value: &str) -> Result<(), RedisError> {
-    let mut con = create_connection(pool).await?;
-    let redis_key = get_key(key);
-    con.set_ex(redis_key, value, TTL)
-        .await
-        .map_err(|e| RedisError::new_string(e.to_string()))
-}
-
-pub async fn set_hash<RV: FromRedisValue>(
+pub async fn set_hash(
     pool: &DeadpoolPool,
     cache_payload: CachePayload, // values: &'a [(String, String)],
 ) -> Result<(), RedisError> {
@@ -93,21 +76,12 @@ pub async fn set_hash<RV: FromRedisValue>(
         hash_values.push((x.0.as_str(), x.1.as_str()));
     }
 
-    let _ = &conn
-        .hset_multiple::<String, &str, &str, RV>(
-            format!("{}:{}", cache_payload.prefix, cache_payload.hash_key),
-            &hash_values[..],
-        )
+    cmd("HMSET")
+        .arg(cache_payload.hash_key)
+        .arg(&hash_values[..])
+        .query_async::<_, ()>(&mut conn)
         .await
         .unwrap();
 
     Ok(())
-}
-
-pub async fn get(pool: &DeadpoolPool, key: &str) -> Result<String, RedisError> {
-    let mut con = create_connection(pool).await?;
-    let redis_key = get_key(key);
-    con.get(redis_key)
-        .await
-        .map_err(|e| RedisError::new_string(e.to_string()))
 }
