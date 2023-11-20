@@ -8,8 +8,12 @@ use crate::{
 use actix_web::web;
 use serde_derive::Serialize;
 
+use crate::storage::cache::*;
 use base64::encode;
+use deadpool_redis::{Config, Connection, Pool, Runtime};
 use derive_builder::Builder;
+
+use redis::FromRedisValue;
 
 #[derive(Debug, Serialize)]
 pub struct ReturnHTTPResponse {
@@ -26,6 +30,7 @@ pub struct InvoiceHTTPResponse {
 
 pub async fn create_invoice(
     invoice_request: web::Json<InvoiceRequest>,
+    redis_pool: web::Data<Pool>,
 ) -> web::Json<ReturnHTTPResponse> {
     let mut node_connection = NodeConnection::new(&invoice_request.node_name)
         .await
@@ -49,9 +54,21 @@ pub async fn create_invoice(
         .add_index(lnd_response.add_index.clone())
         .payment_addr(payment_addr)
         .payment_request(lnd_response.payment_request.clone())
-        .r_hash(r_hash)
+        .r_hash(r_hash.clone())
         .build()
         .unwrap();
+
+    let cache_payload = CachePayload::new(
+        format!("{}:{}", "invoice", r_hash),
+        vec![(
+            "payment_request".to_string(),
+            lnd_response.payment_request.clone(),
+        )],
+    );
+    match set_hash(&redis_pool, cache_payload).await {
+        Err(redis_error) => error!("Error persisting to redis: {:?}", redis_error),
+        _ => info!("setting to redis worked"),
+    }
 
     web::Json(ReturnHTTPResponse {
         message: invoice_http_response,
